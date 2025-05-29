@@ -1,32 +1,15 @@
-package com.bridgelabz.cryptotracker.user.entity;
+package com.bridgelabz.cryptotracker.user.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-public class CryptoAsset {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class CryptoAssetDTO {
     private String symbol;
     private double quantityHeld;
     private double buyPrice;
     private double currentPrice;
     private String lastUpdated;
-
-    public double getCurrentValue() {
-        return quantityHeld * currentPrice;
-    }
-
-    public double getPnL() {
-        return getCurrentValue() - buyPrice;
-    }
+    private double currentValue;
+    private double pnl;
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
 
@@ -41,4 +24,10 @@ public class CryptoAsset {
 
     public String getLastUpdated() { return lastUpdated; }
     public void setLastUpdated(String lastUpdated) { this.lastUpdated = lastUpdated; }
+
+    public double getCurrentValue() { return currentValue; }
+    public void setCurrentValue(double currentValue) { this.currentValue = currentValue; }
+
+    public double getPnl() { return pnl; }
+    public void setPnl(double pnl) { this.pnl = pnl; }
 }
