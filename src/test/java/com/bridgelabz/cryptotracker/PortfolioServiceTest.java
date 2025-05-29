@@ -1,103 +1,128 @@
 package com.bridgelabz.cryptotracker;
 
-
-
+import com.bridgelabz.cryptotracker.user.dto.PortfolioEntryDTO;
 import com.bridgelabz.cryptotracker.user.entity.PortfolioEntry;
 import com.bridgelabz.cryptotracker.user.repository.PortfolioRepository;
 import com.bridgelabz.cryptotracker.user.service.PortfolioService;
-
+import com.bridgelabz.cryptotracker.user.service.PortfolioService.CoinGeckoResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class PortfolioServiceTest {
+class PortfolioServiceTest {
 
-    @InjectMocks
+    private PortfolioRepository portfolioRepository;
+    private RestTemplate restTemplate;
     private PortfolioService portfolioService;
 
-    @Mock
-    private PortfolioRepository portfolioRepository;
-
-    @Mock
-    private RestTemplate restTemplate;
-
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        portfolioRepository = mock(PortfolioRepository.class);
+        restTemplate = mock(RestTemplate.class);
+        portfolioService = new PortfolioService();
+
+        // Inject mocks into private fields
+        ReflectionTestUtils.setField(portfolioService, "portfolioRepository", portfolioRepository);
+        ReflectionTestUtils.setField(portfolioService, "restTemplate", restTemplate);
     }
 
     @Test
     void testGetPortfolioByUserId() {
-        List<PortfolioEntry> entries = List.of(new PortfolioEntry());
-        when(portfolioRepository.findByUserId("user123")).thenReturn(entries);
+        PortfolioEntry entry = new PortfolioEntry();
+        entry.setId(1);
+        entry.setUserId("user1");
+        entry.setCoinId("bitcoin");
+        entry.setCoinName("Bitcoin");
+        entry.setSymbol("btc");
+        entry.setQuantityHeld(1.5);
+        entry.setBuyPrice(20000.0);
+        entry.setBuyDate(LocalDate.of(2023, 5, 29));
 
-        List<PortfolioEntry> result = portfolioService.getPortfolioByUserId("user123");
+        when(portfolioRepository.findByUserId("user1")).thenReturn(List.of(entry));
 
-        assertEquals(1, result.size());
-        verify(portfolioRepository, times(1)).findByUserId("user123");
+        List<PortfolioEntryDTO> dtos = portfolioService.getPortfolioByUserId("user1");
+
+        assertEquals(1, dtos.size());
+        assertEquals("Bitcoin", dtos.get(0).getCoinName());
     }
 
     @Test
     void testAddPortfolioEntry_Success() {
-        PortfolioEntry entry = new PortfolioEntry();
-        entry.setId(1);
-        entry.setUserId("user123");
-        entry.setCoinId("bitcoin");
+        PortfolioEntryDTO dto = new PortfolioEntryDTO();
+        dto.setId(2);
+        dto.setUserId("user2");
+        dto.setCoinId("ethereum");
 
-        PortfolioService.CoinGeckoResponse[] apiResponse = new PortfolioService.CoinGeckoResponse[1];
-        PortfolioService.CoinGeckoResponse coin = new PortfolioService.CoinGeckoResponse();
-        coin.setName("Bitcoin");
-        coin.setSymbol("BTC");
-        coin.setCurrent_price(30000.0);
-        apiResponse[0] = coin;
+        CoinGeckoResponse mockResponse = new CoinGeckoResponse();
+        mockResponse.setId("ethereum");
+        mockResponse.setName("Ethereum");
+        mockResponse.setSymbol("eth");
+        mockResponse.setCurrent_price(1500.0);
 
-        when(restTemplate.getForObject(anyString(), eq(PortfolioService.CoinGeckoResponse[].class)))
-                .thenReturn(apiResponse);
+        when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponse[].class)))
+                .thenReturn(new CoinGeckoResponse[]{mockResponse});
 
-        when(portfolioRepository.save(any(PortfolioEntry.class))).thenReturn(entry);
+        when(portfolioRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        PortfolioEntry result = portfolioService.addPortfolioEntry(entry);
+        PortfolioEntryDTO savedDto = portfolioService.addPortfolioEntry(dto);
 
-        assertEquals("Bitcoin", result.getCoinName());
-        assertEquals("BTC", result.getSymbol());
-        assertEquals(30000.0, result.getBuyPrice());
+        assertEquals("Ethereum", savedDto.getCoinName());
+        assertEquals("eth", savedDto.getSymbol());
+        assertEquals(1500.0, savedDto.getBuyPrice());
+    }
+
+    @Test
+    void testAddPortfolioEntry_CoinNotFound_Throws() {
+        PortfolioEntryDTO dto = new PortfolioEntryDTO();
+        dto.setId(3);
+        dto.setUserId("user3");
+        dto.setCoinId("nonexistent");
+
+        when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponse[].class))).thenReturn(null);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> portfolioService.addPortfolioEntry(dto));
+        assertEquals("Coin not found in CoinGecko API", exception.getMessage());
     }
 
     @Test
     void testUpdatePortfolioEntryQuantity_Success() {
-        PortfolioEntry entry = new PortfolioEntry();
-        entry.setId(1);
-        entry.setQuantityHeld(1.0);
+        PortfolioEntry existing = new PortfolioEntry();
+        existing.setId(4);
+        existing.setQuantityHeld(2.0);
 
-        when(portfolioRepository.findById(1)).thenReturn(Optional.of(entry));
-        when(portfolioRepository.save(any())).thenReturn(entry);
+        when(portfolioRepository.findById(4)).thenReturn(Optional.of(existing));
+        when(portfolioRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        PortfolioEntry result = portfolioService.updatePortfolioEntryQuantity(1, 2.5);
+        PortfolioEntryDTO updatedDto = portfolioService.updatePortfolioEntryQuantity(4, 5.5);
 
-        assertEquals(2.5, result.getQuantityHeld());
+        assertEquals(5.5, updatedDto.getQuantityHeld());
     }
 
     @Test
     void testUpdatePortfolioEntryQuantity_NotFound() {
-        when(portfolioRepository.findById(99)).thenReturn(Optional.empty());
+        when(portfolioRepository.findById(999)).thenReturn(Optional.empty());
 
-        Exception ex = assertThrows(RuntimeException.class, () ->
-                portfolioService.updatePortfolioEntryQuantity(99, 1.0));
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> portfolioService.updatePortfolioEntryQuantity(999, 1.0));
 
-        assertTrue(ex.getMessage().contains("not found"));
+        assertEquals("Portfolio entry not found with id 999", exception.getMessage());
     }
 
     @Test
     void testDeletePortfolioEntry() {
-        portfolioService.deletePortfolioEntry(1);
-        verify(portfolioRepository, times(1)).deleteById(1);
+        doNothing().when(portfolioRepository).deleteById(5);
+
+        portfolioService.deletePortfolioEntry(5);
+
+        verify(portfolioRepository, times(1)).deleteById(5);
     }
 }
-
