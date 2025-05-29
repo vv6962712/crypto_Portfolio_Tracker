@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.bridgelabz.cryptotracker.user.dto.PortfolioEntryDTO;
+import com.bridgelabz.cryptotracker.user.dto.PortfolioMapper;
 import com.bridgelabz.cryptotracker.user.service.PortfolioService;
+import com.bridgelabz.cryptotracker.user.exception.PortfolioEntryNotFoundException;
 
 import java.util.List;
 
@@ -36,9 +38,12 @@ public class PortfolioController {
             @RequestBody QuantityUpdateRequest request) {
 
         PortfolioEntryDTO updated = portfolioService.updatePortfolioEntryQuantity(id, request.getQuantityHeld());
+
+        if (updated == null) {
+            throw new PortfolioEntryNotFoundException(id);
+        }
         return ResponseEntity.ok(updated);
     }
-
     // Delete portfolio entry by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePortfolioEntry(@PathVariable int id) {
