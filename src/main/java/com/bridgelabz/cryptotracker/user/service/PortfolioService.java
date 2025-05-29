@@ -4,15 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.bridgelabz.cryptotracker.user.Interface.PortfolioServiceInterface;
+import com.bridgelabz.cryptotracker.user.dto.PortfolioEntryDTO;
+import com.bridgelabz.cryptotracker.user.dto.PortfolioMapper;
 import com.bridgelabz.cryptotracker.user.entity.PortfolioEntry;
 import com.bridgelabz.cryptotracker.user.repository.PortfolioRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class PortfolioService {
+public class PortfolioService implements PortfolioServiceInterface {
 
     @Autowired
     private PortfolioRepository portfolioRepository;
@@ -23,13 +26,17 @@ public class PortfolioService {
     private static final String COINGECKO_API_URL =
             "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=1&page=1";
 
-    public List<PortfolioEntry> getPortfolioByUserId(String userId) {
-        return portfolioRepository.findByUserId(userId);
+    @Override
+    public List<PortfolioEntryDTO> getPortfolioByUserId(String userId) {
+        List<PortfolioEntry> entries = portfolioRepository.findByUserId(userId);
+        return entries.stream()
+                .map(PortfolioMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public PortfolioEntry addPortfolioEntry(PortfolioEntry entry) {
-        // Fetch coin data from CoinGecko API to fill coinName, symbol, buyPrice (current_price)
-        String url = String.format(COINGECKO_API_URL, entry.getCoinId());
+    @Override
+    public PortfolioEntryDTO addPortfolioEntry(PortfolioEntryDTO dto) {
+        String url = String.format(COINGECKO_API_URL, dto.getCoinId());
 
         CoinGeckoResponse[] response = restTemplate.getForObject(url, CoinGeckoResponse[].class);
         if (response == null || response.length == 0) {
@@ -38,30 +45,34 @@ public class PortfolioService {
 
         CoinGeckoResponse coin = response[0];
 
-        entry.setCoinName(coin.getName());
-        entry.setSymbol(coin.getSymbol());
-        entry.setBuyPrice(coin.getCurrent_price());
+        dto.setCoinName(coin.getName());
+        dto.setSymbol(coin.getSymbol());
+        dto.setBuyPrice(coin.getCurrent_price());
 
-        // Save entry to DB (id must be manually set by caller)
-        return portfolioRepository.save(entry);
+        PortfolioEntry entity = PortfolioMapper.toEntity(dto);
+        PortfolioEntry saved = portfolioRepository.save(entity);
+
+        return PortfolioMapper.toDTO(saved);
     }
 
-    public PortfolioEntry updatePortfolioEntryQuantity(int id, Double quantityHeld) {
+    @Override
+    public PortfolioEntryDTO updatePortfolioEntryQuantity(int id, Double quantityHeld) {
         Optional<PortfolioEntry> optionalEntry = portfolioRepository.findById(id);
         if (optionalEntry.isPresent()) {
             PortfolioEntry entry = optionalEntry.get();
             entry.setQuantityHeld(quantityHeld);
-            return portfolioRepository.save(entry);
+            PortfolioEntry updated = portfolioRepository.save(entry);
+            return PortfolioMapper.toDTO(updated);
         } else {
             throw new RuntimeException("Portfolio entry not found with id " + id);
         }
     }
 
+    @Override
     public void deletePortfolioEntry(int id) {
         portfolioRepository.deleteById(id);
     }
 
-    // DTO class to map API response (only needed fields)
     public static class CoinGeckoResponse {
         private String id;
         private String symbol;

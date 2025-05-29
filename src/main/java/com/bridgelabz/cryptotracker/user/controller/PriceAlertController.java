@@ -1,8 +1,6 @@
 package com.bridgelabz.cryptotracker.user.controller;
 
-
-
-import com.bridgelabz.cryptotracker.user.entity.PriceAlert;
+import com.bridgelabz.cryptotracker.user.dto.PriceAlertDTO;
 import com.bridgelabz.cryptotracker.user.service.PriceAlertService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +17,18 @@ public class PriceAlertController {
     }
 
     @PostMapping
-    public void addAlert(@RequestBody PriceAlert alert) {
-        alert.setStatus("pending");
-        service.save(alert);
+    public void addAlert(@RequestBody PriceAlertDTO alertDTO) {
+        alertDTO.setStatus("pending");
+        service.save(alertDTO);
     }
 
     @GetMapping
-    public List<PriceAlert> all() {
+    public List<PriceAlertDTO> all() {
         return service.getAll();
     }
 
     @GetMapping("/triggered")
-    public List<PriceAlert> triggered() {
+    public List<PriceAlertDTO> triggered() {
         return service.getTriggered();
     }
 }

@@ -1,19 +1,16 @@
 package com.bridgelabz.cryptotracker.user.service;
 
 import com.bridgelabz.cryptotracker.user.entity.User;
+import com.bridgelabz.cryptotracker.user.Interface.UserServiceInterface;
 import com.bridgelabz.cryptotracker.user.entity.Role;
 import com.bridgelabz.cryptotracker.user.repository.UserRepository;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserServiceInterface {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,6 +20,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public void registerUser(String name, Integer userId, String email, String rawPassword, String roleName) {
         User user = new User();
         user.setName(name);
@@ -41,11 +39,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // gets all users
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Override
     public String loginUser(String email, String rawPassword) throws Exception {
         Optional<User> userOpt = userRepository.findByEmail(email);
 
