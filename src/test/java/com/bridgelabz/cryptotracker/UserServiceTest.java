@@ -28,21 +28,21 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Initializes @Mock and @InjectMocks
+        MockitoAnnotations.openMocks(this); 
     }
 
     @Test
     void registerUser_shouldSaveUserWithEncodedPasswordAndRole() {
         when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
 
-        userService.registerUser("John", 100, "john@example.com", "plainPassword", "ROLE_USER");
+        userService.registerUser("Vishnu", 100, "vishnu@email.com", "plainPassword", "ROLE_USER");
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
 
         User savedUser = userCaptor.getValue();
-        assertEquals("John", savedUser.getName());
-        assertEquals("john@example.com", savedUser.getEmail());
+        assertEquals("Vishnu", savedUser.getName());
+        assertEquals("vishnu@email.com", savedUser.getEmail());
         assertEquals("encodedPassword", savedUser.getPassword());
         assertTrue(savedUser.getRoles().contains(Role.ROLE_USER));
     }
@@ -50,7 +50,7 @@ class UserServiceTest {
     @Test
     void registerUser_withInvalidRole_shouldThrowException() {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            userService.registerUser("Jane", 101, "jane@example.com", "password", "INVALID_ROLE");
+            userService.registerUser("Dinesh", 101, "dinesh@email.com", "password", "INVALID_ROLE");
         });
 
         assertTrue(exception.getMessage().contains("Invalid role"));
@@ -59,28 +59,28 @@ class UserServiceTest {
     @Test
     void loginUser_withValidCredentials_shouldReturnSuccessMessage() throws Exception {
         User mockUser = new User();
-        mockUser.setEmail("test@example.com");
+        mockUser.setEmail("vishnu@email.com");
         mockUser.setPassword("encodedPass");
-        mockUser.setName("Test User");
+        mockUser.setName("Vishnu");
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+        when(userRepository.findByEmail("vishnu@email.com")).thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("plainPass", "encodedPass")).thenReturn(true);
 
-        String result = userService.loginUser("test@example.com", "plainPass");
-        assertEquals("Logged in successfully as: Test User", result);
+        String result = userService.loginUser("vishnu@email.com", "plainPass");
+        assertEquals("Logged in successfully as: Vishnu", result);
     }
 
     @Test
     void loginUser_withWrongPassword_shouldThrowException() {
         User mockUser = new User();
-        mockUser.setEmail("test@example.com");
+        mockUser.setEmail("dinesh@email.com");
         mockUser.setPassword("encodedPass");
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+        when(userRepository.findByEmail("dinesh@email.com")).thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("wrongPass", "encodedPass")).thenReturn(false);
 
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.loginUser("test@example.com", "wrongPass");
+            userService.loginUser("dinesh@email.com", "wrongPass");
         });
 
         assertEquals("Invalid password", exception.getMessage());
@@ -88,10 +88,10 @@ class UserServiceTest {
 
     @Test
     void loginUser_withNonExistentEmail_shouldThrowException() {
-        when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("nonexistent@email.com")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.loginUser("nonexistent@example.com", "anyPassword");
+            userService.loginUser("nonexistent@email.com", "anyPassword");
         });
 
         assertEquals("User not found", exception.getMessage());
@@ -100,21 +100,21 @@ class UserServiceTest {
     @Test
     void getAllUsers_shouldReturnList() {
         User user1 = new User();
-        user1.setEmail("vv6962711");
-        user1.setName("vishnu");
+        user1.setEmail("vishnu@email.com");
+        user1.setName("Vishnu");
 
         User user2 = new User();
-        user2.setEmail("dinesh2244");
-        user2.setName("dinesh");
+        user2.setEmail("dinesh@email.com");
+        user2.setName("Dinesh");
 
         List<User> users = Arrays.asList(user1, user2);
         when(userRepository.findAll()).thenReturn(users);
 
         List<User> result = userService.getAllUsers();
         assertEquals(2, result.size());
-        assertEquals("vishnu", result.get(0).getName());
-        assertEquals("vv6962711", result.get(0).getEmail());
-        assertEquals("dinesh", result.get(1).getName());
-        assertEquals("dinesh2244", result.get(1).getEmail());
+        assertEquals("Vishnu", result.get(0).getName());
+        assertEquals("vishnu@email.com", result.get(0).getEmail());
+        assertEquals("Dinesh", result.get(1).getName());
+        assertEquals("dinesh@email.com", result.get(1).getEmail());
     }
 }

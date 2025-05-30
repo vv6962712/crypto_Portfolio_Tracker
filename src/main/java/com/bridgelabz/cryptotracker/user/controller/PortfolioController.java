@@ -22,20 +22,18 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
-    // Get all portfolio entries for a user
+    
     @GetMapping("/{userId}")
     public List<PortfolioEntryDTO> getPortfolioByUserId(@PathVariable String userId) {
         return portfolioService.getPortfolioByUserId(userId);
     }
 
-    // Add new portfolio entry (id is required and must be unique)
     @PostMapping
     public ResponseEntity<PortfolioEntryDTO> addPortfolioEntry(@RequestBody PortfolioEntryDTO entryDTO) {
         PortfolioEntryDTO saved = portfolioService.addPortfolioEntry(entryDTO);
         return ResponseEntity.ok(saved);
     }
 
-    // Update quantity held for a portfolio entry by id
     @PutMapping("/{id}")
     public ResponseEntity<PortfolioEntryDTO> updateQuantity(
             @PathVariable int id,
@@ -48,14 +46,14 @@ public class PortfolioController {
         }
         return ResponseEntity.ok(updated);
     }
-    // Delete portfolio entry by id
+ 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePortfolioEntry(@PathVariable int id) {
         portfolioService.deletePortfolioEntry(id);
         return ResponseEntity.ok("Deleted portfolio entry with id " + id);
     }
 
-    // DTO for update quantity
+
     public static class QuantityUpdateRequest {
         private Double quantityHeld;
 

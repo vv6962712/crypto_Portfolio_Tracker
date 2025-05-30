@@ -9,10 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity  // keeps @PreAuthorize usable if you want later
+@EnableMethodSecurity  
 public class SecurityConfig {
 
-    // Password encoder bean (needed for UserService)
+   
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

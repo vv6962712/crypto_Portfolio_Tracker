@@ -24,7 +24,7 @@ public class RegisterRequest {
     @NotNull(message = "User ID is required")
     private Integer userId;
 
-    // Getters and Setters
+  
 
     public String getName() {
         return name;

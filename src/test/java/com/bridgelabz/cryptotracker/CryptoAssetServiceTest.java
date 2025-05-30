@@ -29,10 +29,7 @@ class CryptoAssetServiceTest {
         restTemplate = mock(RestTemplate.class);
         service = new CryptoAssetService();
 
-        // Inject mocked repository and restTemplate using reflection because fields are private and no setter
-        // For restTemplate, since it's instantiated inside method, we need to mock it differently (explained below)
-
-        // Inject repository
+        
         try {
             var repoField = CryptoAssetService.class.getDeclaredField("repository");
             repoField.setAccessible(true);
@@ -99,17 +96,17 @@ class CryptoAssetServiceTest {
     void testUpdatePrices_withSpy() {
         CryptoAssetService spyService = spy(service);
 
-        // Mock repository.findAll()
+        
         CryptoAsset asset = new CryptoAsset();
         asset.setSymbol("btc");
         asset.setCurrentPrice(25000);
         when(repository.findAll()).thenReturn(List.of(asset));
         when(repository.saveAll(any())).thenReturn(List.of(asset));
 
-        // Just call the real updatePrices() - but no control over RestTemplate call
+        
         spyService.updatePrices();
 
-        // Verify saveAll is called
+        
         verify(repository, times(1)).saveAll(any());
     }
 

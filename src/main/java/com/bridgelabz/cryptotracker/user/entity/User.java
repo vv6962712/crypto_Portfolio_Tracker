@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Set<Role> roles;
 
-    //getter and setter 
+  
 
     public Integer getUserId() {
         return userId;
@@ -77,7 +77,7 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    // UserDetails interface methods
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
