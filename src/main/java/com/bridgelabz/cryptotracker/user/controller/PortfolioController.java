@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import com.bridgelabz.cryptotracker.user.dto.PortfolioEntryDTO;
 import com.bridgelabz.cryptotracker.user.dto.PortfolioMapper;
 import com.bridgelabz.cryptotracker.user.service.PortfolioService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.bridgelabz.cryptotracker.user.exception.PortfolioEntryNotFoundException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/portfolio")
+@Tag(name="Portfolio Management")
 public class PortfolioController {
 
     @Autowired

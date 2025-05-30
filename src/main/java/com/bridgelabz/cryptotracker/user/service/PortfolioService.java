@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class PortfolioService implements PortfolioServiceInterface {
 
-    @Autowired
+   @Autowired
     private PortfolioRepository portfolioRepository;
 
     @Autowired

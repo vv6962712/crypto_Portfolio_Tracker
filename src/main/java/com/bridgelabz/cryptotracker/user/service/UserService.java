@@ -4,6 +4,8 @@ import com.bridgelabz.cryptotracker.user.entity.User;
 import com.bridgelabz.cryptotracker.user.Interface.UserServiceInterface;
 import com.bridgelabz.cryptotracker.user.entity.Role;
 import com.bridgelabz.cryptotracker.user.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +13,7 @@ import java.util.*;
 
 @Service
 public class UserService implements UserServiceInterface {
-
+    @Autowired
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -32,7 +34,7 @@ public class UserService implements UserServiceInterface {
         try {
             roles.add(Role.valueOf(roleName));
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("❌ Invalid role: " + roleName);
+            throw new RuntimeException("Invalid role: " + roleName);
         }
 
         user.setRoles(roles);
