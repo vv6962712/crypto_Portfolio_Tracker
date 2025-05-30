@@ -2,12 +2,16 @@ package com.bridgelabz.cryptotracker.user.controller;
 
 import com.bridgelabz.cryptotracker.user.dto.PriceAlertDTO;
 import com.bridgelabz.cryptotracker.user.service.PriceAlertService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/alerts")
+@Tag(name="Price Alerts")
 public class PriceAlertController {
 
     private final PriceAlertService service;

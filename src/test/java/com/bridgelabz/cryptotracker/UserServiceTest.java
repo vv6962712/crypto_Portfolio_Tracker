@@ -1,11 +1,9 @@
 package com.bridgelabz.cryptotracker;
 
-
-
-import com.bridgelabz.cryptotracker.user.entity.Role;
 import com.bridgelabz.cryptotracker.user.entity.User;
 import com.bridgelabz.cryptotracker.user.repository.UserRepository;
 import com.bridgelabz.cryptotracker.user.service.UserService;
+import com.bridgelabz.cryptotracker.user.entity.Role;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +31,6 @@ class UserServiceTest {
         MockitoAnnotations.openMocks(this); // Initializes @Mock and @InjectMocks
     }
 
-
     @Test
     void registerUser_shouldSaveUserWithEncodedPasswordAndRole() {
         when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
@@ -50,7 +47,6 @@ class UserServiceTest {
         assertTrue(savedUser.getRoles().contains(Role.ROLE_USER));
     }
 
-
     @Test
     void registerUser_withInvalidRole_shouldThrowException() {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -59,7 +55,6 @@ class UserServiceTest {
 
         assertTrue(exception.getMessage().contains("Invalid role"));
     }
-
 
     @Test
     void loginUser_withValidCredentials_shouldReturnSuccessMessage() throws Exception {
@@ -75,7 +70,6 @@ class UserServiceTest {
         assertEquals("Logged in successfully as: Test User", result);
     }
 
- 
     @Test
     void loginUser_withWrongPassword_shouldThrowException() {
         User mockUser = new User();
@@ -92,7 +86,6 @@ class UserServiceTest {
         assertEquals("Invalid password", exception.getMessage());
     }
 
-
     @Test
     void loginUser_withNonExistentEmail_shouldThrowException() {
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
@@ -104,14 +97,24 @@ class UserServiceTest {
         assertEquals("User not found", exception.getMessage());
     }
 
-
     @Test
     void getAllUsers_shouldReturnList() {
-        List<User> users = Arrays.asList(new User(), new User());
+        User user1 = new User();
+        user1.setEmail("vv6962711");
+        user1.setName("vishnu");
+
+        User user2 = new User();
+        user2.setEmail("dinesh2244");
+        user2.setName("dinesh");
+
+        List<User> users = Arrays.asList(user1, user2);
         when(userRepository.findAll()).thenReturn(users);
 
         List<User> result = userService.getAllUsers();
         assertEquals(2, result.size());
+        assertEquals("vishnu", result.get(0).getName());
+        assertEquals("vv6962711", result.get(0).getEmail());
+        assertEquals("dinesh", result.get(1).getName());
+        assertEquals("dinesh2244", result.get(1).getEmail());
     }
 }
-

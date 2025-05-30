@@ -2,6 +2,9 @@ package com.bridgelabz.cryptotracker.user.controller;
 
 import com.bridgelabz.cryptotracker.user.dto.CryptoAssetDTO;
 import com.bridgelabz.cryptotracker.user.service.CryptoAssetService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.bridgelabz.cryptotracker.user.exception.PortfolioNotFoundException;
@@ -9,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/portfolio")
+@Tag(name="Price Valuation")
 public class CryptoAssetController {
 
     @Autowired

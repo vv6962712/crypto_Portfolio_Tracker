@@ -4,6 +4,8 @@ import com.bridgelabz.cryptotracker.user.Interface.PriceAlertServiceInterface;
 import com.bridgelabz.cryptotracker.user.dto.PriceAlertDTO;
 import com.bridgelabz.cryptotracker.user.entity.PriceAlert;
 import com.bridgelabz.cryptotracker.user.repository.PriceAlertRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PriceAlertService implements PriceAlertServiceInterface {
-
+    @Autowired
     private final PriceAlertRepository repo;
 
     public PriceAlertService(PriceAlertRepository repo) {
