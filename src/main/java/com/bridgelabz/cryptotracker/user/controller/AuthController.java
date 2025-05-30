@@ -24,7 +24,6 @@ public class AuthController {
         this.userService = userService;
     }
 
-    // registers user and return custom message
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         userService.registerUser(
@@ -37,13 +36,13 @@ public class AuthController {
         return ResponseEntity.ok("Registered successfully");
     }
 
-    // admin can access all other users
+   
     @GetMapping("/users")
     public List<?> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    // login and return message
+ 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
         try {

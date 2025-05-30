@@ -29,7 +29,7 @@ class PortfolioServiceTest {
         restTemplate = mock(RestTemplate.class);
         portfolioService = new PortfolioService();
 
-        // Inject mocks into private fields
+        
         ReflectionTestUtils.setField(portfolioService, "portfolioRepository", portfolioRepository);
         ReflectionTestUtils.setField(portfolioService, "restTemplate", restTemplate);
     }

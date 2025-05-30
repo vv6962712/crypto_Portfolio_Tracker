@@ -8,11 +8,11 @@ public class PriceAlertDTO {
     private String coinId;
     private String symbol;
     private double triggerPrice;
-    private String direction; // above / below
-    private String status;    // pending / triggered
+    private String direction; 
+    private String status;    
     private LocalDateTime triggeredAt;
 
-    // Getters and setters
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

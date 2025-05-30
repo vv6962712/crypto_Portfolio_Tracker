@@ -8,17 +8,17 @@ import java.time.LocalDate;
 public class PortfolioEntry {
 
     @Id
-    private int id;  // manually assigned primary key
+    private int id;  
 
     private String userId;
-    private String coinId;    // CoinGecko coin id e.g. "bitcoin"
+    private String coinId;    
     private String coinName;
     private String symbol;
     private Double quantityHeld;
     private Double buyPrice;
     private LocalDate buyDate;
 
-    // Getters and Setters
+   
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

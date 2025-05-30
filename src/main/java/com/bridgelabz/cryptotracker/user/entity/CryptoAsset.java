@@ -1,6 +1,8 @@
 package com.bridgelabz.cryptotracker.user.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class CryptoAsset {
@@ -10,6 +12,7 @@ public class CryptoAsset {
     private Long id;
 
     private String symbol;
+
     private double quantityHeld;
     private double buyPrice;
     private double currentPrice;
@@ -23,7 +26,6 @@ public class CryptoAsset {
         return getCurrentValue() - buyPrice;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
