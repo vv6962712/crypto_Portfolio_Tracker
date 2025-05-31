@@ -13,10 +13,11 @@ import java.util.*;
 
 @Service
 public class UserService implements UserServiceInterface {
-    @Autowired
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -26,13 +27,13 @@ public class UserService implements UserServiceInterface {
     public void registerUser(String name, Integer userId, String email, String rawPassword, String roleName) {
         User user = new User();
         user.setName(name);
-        user.setUserId(userId); 
+        user.setUserId(userId);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         Set<Role> roles = new HashSet<>();
         try {
-            roles.add(Role.valueOf(roleName));
+            roles.add(Role.valueOf("ROLE_" + roleName.toUpperCase()));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid role: " + roleName);
         }
@@ -49,7 +50,6 @@ public class UserService implements UserServiceInterface {
     @Override
     public String loginUser(String email, String rawPassword) throws Exception {
         Optional<User> userOpt = userRepository.findByEmail(email);
-
         if (userOpt.isEmpty()) {
             throw new Exception("User not found");
         }
@@ -61,5 +61,11 @@ public class UserService implements UserServiceInterface {
         }
 
         return "Logged in successfully as: " + user.getName();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
