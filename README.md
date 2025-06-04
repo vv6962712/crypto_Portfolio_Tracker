@@ -186,14 +186,18 @@ spring.jpa.show-sql=true
 5. **Test the APIs**
 
    * Register and login via `/api/auth`
-   * Use JWT token in Authorization header
+   * Fetch real time price using real time API `/api/prices`
    * Manage portfolio with `/api/portfolio`
    * Set and manage alerts via `/api/alerts`
 
 ---
 
 ## 👥 Authors
-
+-  ⁠[Chintapalli Dinesh](https://github.com/Dinesh2244)
+-  ⁠[S Vishnu Vardhan](https://github.com/vv6962712/)
+-  ⁠[Vijaya Lakshmi](https://github.com/Vijaya-Lakshmi-0917)
+-  ⁠[Sarthak Mudaliar](https://github.com/Sarthak691)
+- ⁠ [Abdul Hadi Mohammed Ashraf](https://github.com/abdulhadi012)
 
 
 
